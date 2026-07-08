@@ -85,6 +85,7 @@ fn main() {
     Command::new("./configure")
         .current_dir(&p4est_src_dir)
         .arg(format!("--prefix={}", install_dir.display()))
+        .arg("--enable-mpi")
         .arg("CC=gcc")
         .output()
         .expect("configure command failed");
