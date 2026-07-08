@@ -12,13 +12,22 @@ fn main() {
 
     let p4est_src_dir = std::path::Path::new(&root_dir).join("p4est");
 
-    println!("cargo::rerun-if-changed=build.rs");
+    //println!("cargo::rerun-if-changed=build.rs");
+    println!("cargo:rerun-if-changed={}/build.rs", root_dir);
 
     //println!("cargo::warning=\"p4est installed to {}\"", install_dir.display());
 
     // update the submodules of p4est
     
     //std::fs::create_dir_all(&install_dir).unwrap();
+
+    if p4est_src_dir.join("Makefile").exists() {
+        Command::new("make")
+            .current_dir(&p4est_src_dir)
+            .arg("clean")
+            .output()
+            .expect("make clean command failed");
+    }
 
     match std::fs::remove_file(p4est_src_dir.join("Makefile")) {
         Ok(_) => {Ok(())},
@@ -45,6 +54,18 @@ fn main() {
     }.unwrap();
 
     match std::fs::remove_file(p4est_src_dir.join("Makefile.in")) {
+        Ok(_) => {Ok(())},
+        Err(e) => {
+            if e.kind() == std::io::ErrorKind::NotFound {
+                // do nothing, this is fine
+                Ok(())
+            } else {
+                Err(e)
+            }
+        }
+    }.unwrap();
+
+    match std::fs::remove_file(p4est_src_dir.join("libtool")) {
         Ok(_) => {Ok(())},
         Err(e) => {
             if e.kind() == std::io::ErrorKind::NotFound {
@@ -94,10 +115,6 @@ fn main() {
         .blocklist_item("FP_SUBNORMAL")
         .blocklist_item("FP_NORMAL")
         .blocklist_item("FP_NAN")
-
-        // Tell cargo to invalidate the built crate whenever any of the
-        // included header files changed.
-        .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
 
         // generate the bindings
         .generate()
