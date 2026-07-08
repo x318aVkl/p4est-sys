@@ -130,8 +130,17 @@ fn main() {
 
     let build_target = std::env::var("CARGO_CFG_TARGET_ARCH").expect("found CARGO_CFG_TARGET_ARCH variable");
 
-    let mut bindings = bindgen::Builder::default()
-        .header("src/include.h")
+
+    // first, 2d bindings
+    let bindings = bindgen::Builder::default();
+
+    #[cfg(feature = "2d")]
+    let bindings = bindings.header("src/include_2d.h");
+
+    #[cfg(feature = "3d")]
+    let bindings = bindings.header("src/include_3d.h");
+
+    let mut bindings = bindings
         .clang_arg(format!("-I{}/include", install_dir.display()))
 
         .clang_arg("-target")
@@ -159,4 +168,5 @@ fn main() {
         .write_to_file(out_dir.join("bindings.rs"))
         .expect("Couldn't write bindings");
 
+    // all done!
 }

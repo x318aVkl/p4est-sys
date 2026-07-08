@@ -12,3 +12,10 @@ build-probe-mpi = "0.1.5"
 
 [profile.dev]
 incremental = false
+
+
+[features]
+default = ["3d"]
+2d = []
+3d = []
+
