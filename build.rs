@@ -128,11 +128,14 @@ fn main() {
         println!("cargo:rustc-link-lib={}", lib);
     }
 
-
+    let build_target = std::env::var("CARGO_CFG_TARGET_ARCH").expect("found CARGO_CFG_TARGET_ARCH variable");
 
     let mut bindings = bindgen::Builder::default()
         .header("src/include.h")
         .clang_arg(format!("-I{}/include", install_dir.display()))
+
+        .clang_arg("-target")
+        .clang_arg(format!("{}", build_target))
         
         .blocklist_item("FP_INT.*")
         .blocklist_item("FP_ZERO")
