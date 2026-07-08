@@ -18,6 +18,21 @@ fn main() {
     //println!("cargo::warning=\"p4est installed to {}\"", install_dir.display());
 
     // update the submodules of p4est
+
+    // figure out the build probe mpi
+    // Try to find an MPI library
+    let lib = match build_probe_mpi::probe() {
+        Ok(lib) => lib,
+        Err(errs) => {
+            println!("This library checks multiple methods to find an MPI library on your system. This process has failed to find an MPI library for various reasons:\n");
+            for (i, err) in errs.iter().enumerate() {
+                println!("Reason #{}:\n{}\n", i + 1, err);
+            }
+            panic!();
+        }
+    };
+
+
     
     //std::fs::create_dir_all(&install_dir).unwrap();
 
@@ -86,7 +101,6 @@ fn main() {
         .current_dir(&p4est_src_dir)
         .arg(format!("--prefix={}", install_dir.display()))
         .arg("--enable-mpi")
-        .arg("CC=gcc")
         .output()
         .expect("configure command failed");
 
@@ -106,7 +120,16 @@ fn main() {
     println!("cargo:rustc-link-lib=p4est");
     println!("cargo:rustc-link-search={}/lib", install_dir.display());
 
-    let bindings = bindgen::Builder::default()
+    for dir in &lib.lib_paths {
+        println!("cargo:rustc-link-search=native={}", dir.display());
+    }
+    for lib in &lib.libs {
+        println!("cargo:rustc-link-lib={}", lib);
+    }
+
+
+
+    let mut bindings = bindgen::Builder::default()
         .header("src/include.h")
         .clang_arg(format!("-I{}/include", install_dir.display()))
         
@@ -115,7 +138,13 @@ fn main() {
         .blocklist_item("FP_INFINITE")
         .blocklist_item("FP_SUBNORMAL")
         .blocklist_item("FP_NORMAL")
-        .blocklist_item("FP_NAN")
+        .blocklist_item("FP_NAN");
+
+    for dir in &lib.include_paths {
+        bindings = bindings.clang_arg(format!("-I{}", dir.display()));
+    }
+
+    let bindings = bindings
 
         // generate the bindings
         .generate()
