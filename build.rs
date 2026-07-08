@@ -86,8 +86,6 @@ fn main() {
         .current_dir(&p4est_src_dir)
         .arg(format!("--prefix={}", install_dir.display()))
         .arg("CC=gcc")
-        .arg("--enable-static")
-        .arg("--disable-shared")
         .output()
         .expect("configure command failed");
 
@@ -104,7 +102,7 @@ fn main() {
         .expect("make install command failed");
 
     // now that p4est is installed, create the bindings
-    println!("cargo:rustc-link-lib-static=p4est");
+    println!("cargo:rustc-link-lib=p4est");
     println!("cargo:rustc-link-search={}/lib", install_dir.display());
 
     let bindings = bindgen::Builder::default()
