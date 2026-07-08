@@ -118,6 +118,7 @@ fn main() {
 
     // now that p4est is installed, create the bindings
     println!("cargo:rustc-link-lib=p4est");
+    println!("cargo:rustc-link-lib=sc");
     println!("cargo:rustc-link-search={}/lib", install_dir.display());
 
     for dir in &lib.lib_paths {
