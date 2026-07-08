@@ -12,8 +12,9 @@ fn main() {
 
     let p4est_src_dir = std::path::Path::new(&root_dir).join("p4est");
 
+    println!("cargo::rerun-if-changed=build.rs");
 
-    println!("cargo::warning=\"p4est installed to {}\"", install_dir.display());
+    //println!("cargo::warning=\"p4est installed to {}\"", install_dir.display());
 
     // update the submodules of p4est
     
