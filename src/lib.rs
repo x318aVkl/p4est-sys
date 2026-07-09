@@ -15,3 +15,19 @@ pub mod consts {
 pub mod consts {
     pub const DIM: u8 = 3;
 }
+
+
+pub use aliases::*;
+
+#[cfg(feature = "2d")]
+pub mod aliases {
+
+}
+
+#[cfg(feature = "3d")]
+pub mod aliases {
+    use crate::*;
+
+    pub type p4est = p8est;
+    pub type p4est_t = p8est_t;
+}
