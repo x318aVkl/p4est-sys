@@ -128,8 +128,12 @@ fn main() {
         println!("cargo:rustc-link-lib={}", lib);
     }
 
-    let build_target = std::env::var("CARGO_CFG_TARGET_ARCH").expect("found CARGO_CFG_TARGET_ARCH variable");
-
+    let build_arch = std::env::var("CARGO_CFG_TARGET_ARCH").expect("found CARGO_CFG_TARGET_ARCH variable");
+    let build_vendor = std::env::var("CARGO_CFG_TARGET_VENDOR").expect("found CARGO_CFG_TARGET_VENDOR variable");
+    let build_platform = std::env::var("CARGO_CFG_TARGET_OS").expect("found CARGO_CFG_TARGET_OS variable");
+    let build_env_abi = std::env::var("CARGO_CFG_TARGET_ENV").expect("found CARGO_CFG_TARGET_ENV variable");
+    let build_target = format!("{}-{}-{}-{}", build_arch, build_vendor, build_platform, build_env_abi);
+    //println!("cargo::warning=\"building for target {}\"", build_target);
 
     // first, 2d bindings
     let bindings = bindgen::Builder::default();
@@ -143,8 +147,7 @@ fn main() {
     let mut bindings = bindings
         .clang_arg(format!("-I{}/include", install_dir.display()))
 
-        .clang_arg("-target")
-        .clang_arg(format!("{}", build_target))
+        .clang_arg(format!("--target={}", build_target))
         
         .blocklist_item("FP_INT.*")
         .blocklist_item("FP_ZERO")
