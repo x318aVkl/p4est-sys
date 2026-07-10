@@ -43,6 +43,7 @@ pub mod aliases {
     pub type p4est_iter_face_info = p8est_iter_face_info;
 
     pub type p4est_quadrant = p8est_quadrant;
+    pub type p4est_iter_face_side = p8est_iter_face_side;
 
     pub type p4est_tree = p8est_tree;
 
@@ -69,6 +70,10 @@ pub mod aliases {
     pub use p8est_ghost_new as p4est_ghost_new;
     pub use p8est_ghost_destroy as p4est_ghost_destroy;
 
+    pub use p8est_ghost_exchange_data as p4est_ghost_exchange_data;
+
     pub const P4EST_MAXLEVEL: u32 = P8EST_MAXLEVEL;
+
+    pub const p4est_connect_type_t_P4EST_CONNECT_FACE: u32 = p8est_connect_type_t_P8EST_CONNECT_FACE;
 
 }
